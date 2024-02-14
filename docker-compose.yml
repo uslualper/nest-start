@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+    api:
+        container_name: nest-start
+        build:
+            context: .
+            target: ${APP_MODE}
+            dockerfile: ./docker/development.dockerfile
+        env_file:
+            - .env
+        ports:
+            - ${APP_PORT}:${APP_PORT}
+        networks:
+            - nest-network
+        volumes:
+            - ./:/app
+            - /app/node_modules
+        restart: always
+        depends_on:
+            - mysql-db
+            - mongodb-db
+            - redis
+
+    mysql-db:
+        container_name: nest-db
+        image: mysql:8.2
+        restart: unless-stopped
+        ports:
+            - ${MYSQL_PORT}:3306
+        environment:
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        volumes:
+            - mysql:/var/lib/mysql
+        expose:
+            - ${MYSQL_PORT}
+        networks:
+            - nest-network
+
+    mongodb-db:
+        container_name: nest-mongodb
+        image: mongo:7.0.2
+        restart: unless-stopped
+        ports:
+            - ${MONGODB_PORT}:${MONGODB_PORT}
+        env_file:
+            - .env
+        volumes:
+            - mongodb:/data/db
+        networks:
+            - nest-network
+
+    redis:
+        container_name: nest-redis
+        image: redis:6.2.14
+        restart: unless-stopped
+        ports:
+            - 6379:${REDIS_PORT}
+        volumes:
+            - redis_data:/data
+        networks:
+            - nest-network
+
+volumes:
+    mysql:
+        name: nest-db
+    mongodb:
+        name: nest-mongodb 
+    redis_data:
+        name: nest-redis
+
+networks:
+    nest-network:
+        name: nest-network
+        driver: bridge

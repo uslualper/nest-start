@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  PENDING
+  CREATED
+  APPROVED
+  CANCELLED
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String   @unique
+  password    String
+  refreshToken String?
+  basket      Basket[]
+  order       Order[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  stock       Int 
+  price       Float
+  basket      Basket[]
+  order       OrderProduct[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Basket {
+  userId     Int   
+  user       User   @relation(fields: [userId], references: [id])
+  productId  Int
+  product    Product @relation(fields: [productId], references: [id])
+  quantity   Int
+  @@id([userId, productId])
+}
+
+model Order {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  total       Float
+  status      Status
+  products    OrderProduct[]
+  history     OrderHistory[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model OrderProduct {
+  orderId     Int
+  order       Order   @relation(fields: [orderId], references: [id])
+  productId   Int
+  product     Product @relation(fields: [productId], references: [id])
+  quantity    Int
+  @@id([orderId, productId])
+}
+
+model OrderHistory {
+  id          Int      @id @default(autoincrement())
+  orderId     Int
+  order       Order   @relation(fields: [orderId], references: [id])
+  status      Status
+  createdAt   DateTime @default(now())
+}
+
+
+

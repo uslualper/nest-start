@@ -1,0 +1,14 @@
+.git
+node_modules
+dist
+.eslint*
+.prettier*
+.gitignore
+.gitattributes
+.husky
+Dockerfile
+.dockerignore
+docker-compose.yml
+npm-debug.log
+README.md
+
