@@ -22,6 +22,16 @@ $ docker compose up -d --build
 Use ./Dockerfile
 ```
 
+## Database
+
+```bash
+# DB Push
+$ npx prisma db push
+
+# DB Migrate
+$ npx prisma migrate dev
+```
+
 ## Test
 
 ```bash
