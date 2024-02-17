@@ -58,7 +58,7 @@ services:
         image: redis:6.2.14
         restart: unless-stopped
         ports:
-            - 6379:${REDIS_PORT}
+            - ${REDIS_PORT}:6379
         volumes:
             - redis_data:/data
         networks:
